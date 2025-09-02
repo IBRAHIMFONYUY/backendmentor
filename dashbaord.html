@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Backend Mentor | Your Learning Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0d1117',
+                        'dark-surface': '#161b22',
+                        'dark-border': '#30363d',
+                        'accent-blue': '#58a6ff',
+                        'accent-red': '#f85149',
+                        'accent-purple': '#a5a5ff',
+                        'accent-green': '#3fb950',
+                        'accent-yellow': '#f9c23c'
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s infinite',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'bounce-in': 'bounceIn 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.4s ease-out',
+                        'typing': 'typing 3.5s steps(40, end)',
+                        'matrix': 'matrix 20s linear infinite',
+                        'progress': 'progress 2s ease-out',
+                        'notification-slide': 'notificationSlide 0.4s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #58a6ff 0%, #a5a5ff 50%, #f85149 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(165, 165, 255, 0.1) 50%, rgba(248, 81, 73, 0.1) 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(88, 166, 255, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #58a6ff 0%, #a5a5ff 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4493f8 0%, #9090ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: scale(0.7) translateY(-50px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(88, 166, 255, 0.4), 0 0 40px rgba(88, 166, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(88, 166, 255, 0.8), 0 0 80px rgba(88, 166, 255, 0.4); }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes progress {
+            from { stroke-dashoffset: 251.2; }
+            to { stroke-dashoffset: var(--progress-offset); }
+        }
+        
+        @keyframes notificationSlide {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #f0f6fc;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        
+        @media (min-width: 1024px) {
+            .sidebar.collapsed {
+                transform: translateX(-200px);
+            }
+        }
+        
+        .challenge-card {
+            background: linear-gradient(135deg, rgba(22, 27, 34, 0.9) 0%, rgba(13, 17, 23, 0.9) 100%);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .challenge-card:hover {
+            border-color: #58a6ff;
+            box-shadow: 0 10px 30px rgba(88, 166, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .skill-badge {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            color: #58a6ff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-badge:hover {
+            background: rgba(88, 166, 255, 0.2);
+            border-color: #58a6ff;
+            transform: scale(1.05);
+        }
+        
+        .activity-item {
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            border-left-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.05);
+        }
+        
+        .code-editor {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .terminal-output {
+            background: #000;
+            color: #00ff00;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 120px;
+            overflow-y: auto;
+        }
+        
+        .loading-spinner {
+            border: 2px solid #30363d;
+            border-top: 2px solid #58a6ff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .streak-flame {
+            filter: drop-shadow(0 0 10px #f9c23c);
+        }
+        
+        .xp-bar {
+            background: linear-gradient(90deg, #58a6ff 0%, #a5a5ff 50%, #f85149 100%);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 2s ease-out;
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #f9c23c 0%, #ff6b35 100%);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(249, 194, 60, 0.4);
+            animation: pulse-glow 2s infinite;
+        }
+        
+        .leaderboard-rank {
+            background: linear-gradient(135deg, #58a6ff 0%, #a5a5ff 100%);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        
+        .challenge-difficulty-easy {
+            background: rgba(63, 185, 80, 0.2);
+            color: #3fb950;
+            border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+        
+        .challenge-difficulty-medium {
+            background: rgba(249, 194, 60, 0.2);
+            color: #f9c23c;
+            border: 1px solid rgba(249, 194, 60, 0.3);
+        }
+        
+        .challenge-difficulty-hard {
+            background: rgba(248, 81, 73, 0.2);
+            color: #f85149;
+            border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            color: #58a6ff;
+            border-bottom-color: #58a6ff;
+        }
+        
+        .tab-button:hover {
+            color: #58a6ff;
+            background: rgba(88, 166, 255, 0.1);
+        }
+        .img{
+            height: 150px;
+            width: 250px;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-dark-surface transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <img src="logo.png" alt="" class="img">
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Search challenges..." 
+                               class="w-64 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg text-white focus:border-accent-blue focus:outline-none">
+                        <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-accent-green to-accent-blue rounded-full flex items-center justify-center">
+                            <i class="fas fa-fire text-white text-sm streak-flame"></i>
+                        </div>
+                        <span class="font-bold text-accent-yellow" id="streakCount">7</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-star text-accent-yellow"></i>
+                        <span class="font-bold" id="xpCount">3,750</span>
+                        <span class="text-sm text-gray-400">XP</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="notificationBtn" class="relative p-2 rounded-lg hover:bg-dark-surface transition-colors">
+                        <i class="fas fa-bell text-accent-blue text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-accent-red rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    </button>
+                    
+                    <button id="aiAssistantBtn" class="p-2 rounded-lg hover:bg-dark-surface transition-colors animate-pulse-glow">
+                        <i class="fas fa-robot text-accent-purple text-xl"></i>
+                    </button>
+                    
+                    <div class="relative">
+                        <button id="profileBtn" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-dark-surface transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                                <span class="text-sm font-bold">JD</span>
+                            </div>
+                            <span class="hidden md:block font-medium">John Doe</span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed left-0 top-16 h-full w-64 glass-effect z-40 lg:translate-x-0">
+        <div class="p-6 space-y-6">
+            <!-- Quick Stats -->
+            <div class="space-y-4">
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto mb-3 relative">
+                        <svg class="progress-ring w-20 h-20">
+                            <circle class="progress-ring-circle stroke-accent-blue" stroke-width="3" fill="transparent" r="32" cx="40" cy="40" 
+                                    style="--progress-offset: 75.36; stroke-dashoffset: 75.36;"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">15</div>
+                                <div class="text-xs text-gray-400">Level</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-400">Senior Backend Dev</div>
+                </div>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>Progress to Level 16</span>
+                        <span class="text-accent-blue">62%</span>
+                    </div>
+                    <div class="w-full bg-dark-border rounded-full h-2">
+                        <div class="xp-bar w-0" id="xpProgress" style="width: 62%"></div>
+                    </div>
+                    <div class="text-xs text-gray-400 text-center">250 XP to next level</div>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="space-y-2">
+                <a href="#dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-accent-blue/20 text-accent-blue font-medium">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#challenges" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-code"></i>
+                    <span>Challenges</span>
+                </a>
+                <a href="#playground" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-play"></i>
+                    <span>Playground</span>
+                </a>
+                <a href="#learning-path" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-route"></i>
+                    <span>Learning Path</span>
+                </a>
+                <a href="#community" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-users"></i>
+                    <span>Community</span>
+                </a>
+                <a href="#achievements" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-trophy"></i>
+                    <span>Achievements</span>
+                </a>
+                <a href="#analytics" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-dark-surface transition-colors">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+            
+            <!-- Quick Actions -->
+            <div class="space-y-3">
+                <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Quick Actions</h4>
+                <button id="newChallengeBtn" class="w-full px-4 py-3 btn-primary text-white rounded-lg font-medium flex items-center justify-center space-x-2">
+                    <i class="fas fa-plus"></i>
+                    <span>New Challenge</span>
+                </button>
+                <button id="continueBtn" class="w-full px-4 py-3 border border-accent-green text-accent-green rounded-lg hover:bg-accent-green hover:text-white transition-all font-medium">
+                    Continue Learning
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 pt-16 min-h-screen">
+        <div class="p-6 space-y-8">
+            <!-- Welcome Section -->
+            <div class="animate-fade-in-up">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+                    <div>
+                        <h1 class="text-4xl font-bold mb-2">Welcome back, <span class="gradient-text">John!</span></h1>
+                        <p class="text-xl text-gray-300">Ready to level up your backend skills today?</p>
+                    </div>
+                    <div class="mt-4 lg:mt-0 flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-accent-green" id="todayXP">+125</div>
+                            <div class="text-sm text-gray-400">XP Today</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-accent-blue" id="weeklyGoal">4/7</div>
+                            <div class="text-sm text-gray-400">Weekly Goal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-in-left">
+                <div class="glass-effect rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent-blue to-accent-purple rounded-xl flex items-center justify-center">
+                            <i class="fas fa-code text-white text-xl"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">47</div>
+                            <div class="text-sm text-gray-400">Completed</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-300">Challenges Solved</div>
+                    <div class="mt-2 flex items-center text-accent-green text-sm">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+3 this week</span>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent-green to-accent-blue rounded-xl flex items-center justify-center">
+                            <i class="fas fa-clock text-white text-xl"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">23h</div>
+                            <div class="text-sm text-gray-400">This Month</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-300">Coding Time</div>
+                    <div class="mt-2 flex items-center text-accent-green text-sm">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+5h from last month</span>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent-purple to-accent-red rounded-xl flex items-center justify-center">
+                            <i class="fas fa-trophy text-white text-xl"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">12</div>
+                            <div class="text-sm text-gray-400">Earned</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-300">Achievements</div>
+                    <div class="mt-2 flex items-center text-accent-green text-sm">
+                        <i class="fas fa-star mr-1"></i>
+                        <span>2 new this week</span>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent-red to-accent-yellow rounded-xl flex items-center justify-center">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">#247</div>
+                            <div class="text-sm text-gray-400">Global</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-300">Leaderboard Rank</div>
+                    <div class="mt-2 flex items-center text-accent-green text-sm">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+15 positions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Continue Learning Section -->
+                    <div class="glass-effect rounded-2xl p-6 animate-slide-in-left">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold">Continue Learning</h2>
+                            <button class="text-accent-blue hover:text-accent-purple transition-colors">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="challenge-card rounded-xl p-6 mb-4">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold mb-2">Build a REST API with Authentication</h3>
+                                    <p class="text-gray-400 mb-3">Create a secure Node.js API with JWT authentication, user registration, and protected routes.</p>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="skill-badge challenge-difficulty-medium">Medium</span>
+                                        <span class="skill-badge">Node.js</span>
+                                        <span class="skill-badge">JWT</span>
+                                        <span class="skill-badge">Express</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-accent-blue">75%</div>
+                                    <div class="text-sm text-gray-400">Complete</div>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full bg-dark-border rounded-full h-2 mb-4">
+                                <div class="bg-gradient-to-r from-accent-blue to-accent-purple h-2 rounded-full transition-all duration-1000" style="width: 75%"></div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                    <span><i class="fas fa-clock mr-1"></i> 2h 30m left</span>
+                                    <span><i class="fas fa-check mr-1"></i> 6/8 tasks</span>
+                                </div>
+                                <button id="continueChallengeBtn" class="px-6 py-2 btn-primary text-white rounded-lg font-medium">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Challenges -->
+                    <div class="glass-effect rounded-2xl p-6 animate-fade-in-up">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold">Recommended for You</h2>
+                            <div class="flex space-x-2">
+                                <button class="tab-button active px-4 py-2 rounded-lg font-medium" data-tab="all">All</button>
+                                <button class="tab-button px-4 py-2 rounded-lg font-medium" data-tab="backend">Backend</button>
+                                <button class="tab-button px-4 py-2 rounded-lg font-medium" data-tab="fullstack">Fullstack</button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4" id="challengeGrid">
+                            <div class="challenge-card rounded-xl p-4 cursor-pointer" data-challenge="microservices">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold mb-1">Microservices Architecture</h4>
+                                        <p class="text-sm text-gray-400 mb-2">Design and implement a microservices system with Docker</p>
+                                        <div class="flex space-x-2">
+                                            <span class="skill-badge challenge-difficulty-hard">Hard</span>
+                                            <span class="skill-badge">Docker</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-accent-yellow font-bold">+200 XP</div>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400">
+                                    <span><i class="fas fa-users mr-1"></i> 1.2k attempts</span>
+                                    <span><i class="fas fa-star mr-1"></i> 4.8</span>
+                                </div>
+                            </div>
+                            
+                            <div class="challenge-card rounded-xl p-4 cursor-pointer" data-challenge="graphql">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold mb-1">GraphQL API Development</h4>
+                                        <p class="text-sm text-gray-400 mb-2">Build a flexible GraphQL API with subscriptions</p>
+                                        <div class="flex space-x-2">
+                                            <span class="skill-badge challenge-difficulty-medium">Medium</span>
+                                            <span class="skill-badge">GraphQL</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-accent-yellow font-bold">+150 XP</div>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400">
+                                    <span><i class="fas fa-users mr-1"></i> 856 attempts</span>
+                                    <span><i class="fas fa-star mr-1"></i> 4.6</span>
+                                </div>
+                            </div>
+                            
+                            <div class="challenge-card rounded-xl p-4 cursor-pointer" data-challenge="websockets">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold mb-1">Real-time Chat Application</h4>
+                                        <p class="text-sm text-gray-400 mb-2">Create a real-time chat with WebSockets and Redis</p>
+                                        <div class="flex space-x-2">
+                                            <span class="skill-badge challenge-difficulty-medium">Medium</span>
+                                            <span class="skill-badge">WebSockets</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-accent-yellow font-bold">+175 XP</div>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400">
+                                    <span><i class="fas fa-users mr-1"></i> 2.1k attempts</span>
+                                    <span><i class="fas fa-star mr-1"></i> 4.9</span>
+                                </div>
+                            </div>
+                            
+                            <div class="challenge-card rounded-xl p-4 cursor-pointer" data-challenge="database">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold mb-1">Database Optimization</h4>
+                                        <p class="text-sm text-gray-400 mb-2">Optimize queries and implement caching strategies</p>
+                                        <div class="flex space-x-2">
+                                            <span class="skill-badge challenge-difficulty-easy">Easy</span>
+                                            <span class="skill-badge">SQL</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-accent-yellow font-bold">+100 XP</div>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-400">
+                                    <span><i class="fas fa-users mr-1"></i> 3.4k attempts</span>
+                                    <span><i class="fas fa-star mr-1"></i> 4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-8">
+                    <!-- Recent Activity -->
+                    <div class="glass-effect rounded-2xl p-6 animate-slide-in-right">
+                        <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="activity-item flex items-start space-x-3 p-3 rounded-lg">
+                                <div class="w-8 h-8 bg-accent-green rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Completed "API Security"</div>
+                                    <div class="text-sm text-gray-400">+50 XP • 2 hours ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item flex items-start space-x-3 p-3 rounded-lg">
+                                <div class="w-8 h-8 bg-accent-blue rounded-full flex items-center justify-center">
+                                    <i class="fas fa-trophy text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Earned "API Master" badge</div>
+                                    <div class="text-sm text-gray-400">Achievement unlocked • 1 day ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item flex items-start space-x-3 p-3 rounded-lg">
+                                <div class="w-8 h-8 bg-accent-purple rounded-full flex items-center justify-center">
+                                    <i class="fas fa-code text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Started "Microservices"</div>
+                                    <div class="text-sm text-gray-400">New challenge • 2 days ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item flex items-start space-x-3 p-3 rounded-lg">
+                                <div class="w-8 h-8 bg-accent-red rounded-full flex items-center justify-center">
+                                    <i class="fas fa-fire text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">7-day coding streak!</div>
+                                    <div class="text-sm text-gray-400">Keep it up! • 3 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="glass-effect rounded-2xl p-6 animate-bounce-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold">Latest Achievements</h3>
+                            <button class="text-accent-blue hover:text-accent-purple transition-colors">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="achievement-badge mx-auto mb-2">
+                                    <i class="fas fa-shield-alt text-white text-xl"></i>
+                                </div>
+                                <div class="text-xs font-medium">Security Expert</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="achievement-badge mx-auto mb-2">
+                                    <i class="fas fa-database text-white text-xl"></i>
+                                </div>
+                                <div class="text-xs font-medium">DB Master</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="achievement-badge mx-auto mb-2">
+                                    <i class="fas fa-rocket text-white text-xl"></i>
+                                </div>
+                                <div class="text-xs font-medium">Speed Demon</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard -->
+                    <div class="glass-effect rounded-2xl p-6 animate-scale-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold">Weekly Leaderboard</h3>
+                            <button class="text-accent-blue hover:text-accent-purple transition-colors">
+                                <i class="fas fa-crown"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-2 rounded-lg">
+                                <div class="leaderboard-rank">1</div>
+                                <div class="w-8 h-8 bg-gradient-to-r from-accent-yellow to-accent-red rounded-full"></div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Alex Chen</div>
+                                    <div class="text-sm text-gray-400">2,450 XP</div>
+                                </div>
+                                <i class="fas fa-crown text-accent-yellow"></i>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3 p-2 rounded-lg">
+                                <div class="leaderboard-rank">2</div>
+                                <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-green rounded-full"></div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Sarah Kim</div>
+                                    <div class="text-sm text-gray-400">2,180 XP</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3 p-2 rounded-lg bg-accent-blue/10 border border-accent-blue/30">
+                                <div class="leaderboard-rank">3</div>
+                                <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                                    <span class="text-sm font-bold">JD</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-accent-blue">You</div>
+                                    <div class="text-sm text-gray-400">1,950 XP</div>
+                                </div>
+                                <i class="fas fa-arrow-up text-accent-green"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Mentor -->
+                    <div class="glass-effect rounded-2xl p-6 animate-float">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">AI Mentor</h3>
+                                <div class="text-sm text-gray-400">Online</div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect rounded-xl p-4 mb-4">
+                            <p class="text-sm">💡 <strong>Tip of the day:</strong> When building APIs, always implement proper error handling and logging. It'll save you hours of debugging later!</p>
+                        </div>
+                        
+                        <button id="askAiBtn" class="w-full px-4 py-2 border border-accent-purple text-accent-purple rounded-lg hover:bg-accent-purple hover:text-white transition-all font-medium">
+                            Ask AI Mentor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Challenge Modal -->
+    <div id="challengeModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold gradient-text">Challenge Details</h2>
+                <button id="closeChallengeModal" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="challengeContent">
+                <!-- Challenge content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">AI Mentor Assistant</h2>
+                </div>
+                <button id="closeAiModal" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-dark-bg rounded-xl p-4 max-h-80 overflow-y-auto" id="aiChat">
+                    <div class="flex items-start space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div class="glass-effect rounded-xl p-4 max-w-md">
+                            <p class="text-sm">👋 Hi John! I see you're working on authentication challenges. Need help with JWT implementation or security best practices?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <input id="aiInput" type="text" placeholder="Ask me anything about your current challenge..." 
+                           class="flex-1 px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none">
+                    <button id="sendAiMessage" class="px-6 py-3 btn-primary text-white rounded-xl hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Get a hint
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-bug mr-2"></i>
+                        Debug my code
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-book mr-2"></i>
+                        Explain concept
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Best practices
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-accent-green text-xl"></i>
+            <div>
+                <div class="font-semibold">Success!</div>
+                <div class="text-sm text-gray-400">Action completed successfully</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = {
+            name: 'John Doe',
+            level: 15,
+            xp: 3750,
+            streak: 7,
+            completedChallenges: 47,
+            achievements: 12
+        };
+
+        // Utility functions
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            const icons = {
+                success: 'fa-check-circle text-accent-green',
+                error: 'fa-exclamation-circle text-accent-red',
+                info: 'fa-info-circle text-accent-blue',
+                warning: 'fa-exclamation-triangle text-accent-yellow'
+            };
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas ${icons[type]} text-xl"></i>
+                    <div>
+                        <div class="font-semibold">${type.charAt(0).toUpperCase() + type.slice(1)}!</div>
+                        <div class="text-sm text-gray-400">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), duration);
+        }
+
+        function showModal(modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            // Animate counters
+            setTimeout(() => {
+                animateCounter(document.getElementById('todayXP'), 125, '+');
+                animateCounter(document.getElementById('weeklyGoal'), 4);
+                animateCounter(document.getElementById('streakCount'), currentUser.streak);
+                animateCounter(document.getElementById('xpCount'), currentUser.xp);
+            }, 500);
+
+            // Load user preferences
+            const savedUser = localStorage.getItem('backendMentorUser');
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                showNotification(`Welcome back! Continuing your ${userData.track} journey.`);
+            }
+
+            // Simulate real-time updates
+            setInterval(updateRealTimeData, 30000); // Update every 30 seconds
+        }
+
+        function animateCounter(element, target, prefix = '', suffix = '') {
+            let start = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = prefix + target + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = prefix + Math.floor(start) + suffix;
+                }
+            }, 20);
+        }
+
+        function updateRealTimeData() {
+            // Simulate real-time updates
+            const updates = [
+                'New challenge available: "Advanced Docker Deployment"',
+                'Your friend Alex just completed "GraphQL Mastery"',
+                'Weekly leaderboard updated - you moved up 2 positions!',
+                'New achievement unlocked by community member',
+                'Live coding session starting in 15 minutes'
+            ];
+            
+            const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
+            showNotification(randomUpdate, 'info', 2000);
+        }
+
+        // Sidebar functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active state
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.remove('bg-accent-blue/20', 'text-accent-blue');
+                });
+                link.classList.add('bg-accent-blue/20', 'text-accent-blue');
+                
+                const section = link.getAttribute('href').substring(1);
+                showNotification(`Navigating to ${section}...`, 'info');
+                
+                // Simulate navigation
+                setTimeout(() => {
+                    showNotification(`${section} loaded successfully!`);
+                }, 1000);
+            });
+        });
+
+        // Challenge interactions
+        document.getElementById('continueChallengeBtn').addEventListener('click', () => {
+            showNotification('Loading challenge environment...', 'info');
+            setTimeout(() => {
+                showNotification('Challenge environment ready!');
+                // Simulate opening challenge
+                window.open('#challenge/auth-api', '_blank');
+            }, 1500);
+        });
+
+        document.getElementById('newChallengeBtn').addEventListener('click', () => {
+            showNotification('Finding perfect challenge for your level...', 'info');
+            setTimeout(() => {
+                showNotification('Challenge recommendations updated!');
+                document.querySelector('#challengeGrid').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        });
+
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            document.getElementById('continueChallengeBtn').click();
+        });
+
+        // Challenge cards
+        document.querySelectorAll('[data-challenge]').forEach(card => {
+            card.addEventListener('click', () => {
+                const challengeType = card.dataset.challenge;
+                showChallengeModal(challengeType);
+            });
+        });
+
+        function showChallengeModal(challengeType) {
+            const modal = document.getElementById('challengeModal');
+            const content = document.getElementById('challengeContent');
+            
+            const challenges = {
+                microservices: {
+                    title: 'Microservices Architecture Challenge',
+                    difficulty: 'Hard',
+                    xp: 200,
+                    description: 'Design and implement a complete microservices system with Docker containers, API gateway, service discovery, and monitoring.',
+                    skills: ['Docker', 'Kubernetes', 'Node.js', 'Redis', 'MongoDB'],
+                    tasks: [
+                        'Set up Docker containers for each service',
+                        'Implement API gateway with routing',
+                        'Add service discovery with Consul',
+                        'Set up monitoring with Prometheus',
+                        'Implement circuit breaker pattern',
+                        'Add distributed logging',
+                        'Create health check endpoints',
+                        'Deploy to Kubernetes cluster'
+                    ]
+                },
+                graphql: {
+                    title: 'GraphQL API Development',
+                    difficulty: 'Medium',
+                    xp: 150,
+                    description: 'Build a flexible GraphQL API with subscriptions, authentication, and real-time features.',
+                    skills: ['GraphQL', 'Apollo Server', 'Node.js', 'WebSockets'],
+                    tasks: [
+                        'Set up GraphQL schema',
+                        'Implement resolvers',
+                        'Add authentication middleware',
+                        'Create subscriptions',
+                        'Implement data loaders',
+                        'Add error handling',
+                        'Write comprehensive tests'
+                    ]
+                },
+                websockets: {
+                    title: 'Real-time Chat Application',
+                    difficulty: 'Medium',
+                    xp: 175,
+                    description: 'Create a scalable real-time chat application with WebSockets, Redis, and user authentication.',
+                    skills: ['WebSockets', 'Socket.io', 'Redis', 'JWT'],
+                    tasks: [
+                        'Set up WebSocket server',
+                        'Implement user authentication',
+                        'Create chat rooms',
+                        'Add message persistence',
+                        'Implement typing indicators',
+                        'Add file sharing',
+                        'Scale with Redis adapter'
+                    ]
+                },
+                database: {
+                    title: 'Database Optimization Challenge',
+                    difficulty: 'Easy',
+                    xp: 100,
+                    description: 'Optimize database queries, implement caching strategies, and improve overall performance.',
+                    skills: ['SQL', 'PostgreSQL', 'Redis', 'Indexing'],
+                    tasks: [
+                        'Analyze slow queries',
+                        'Create optimal indexes',
+                        'Implement query caching',
+                        'Set up Redis cache',
+                        'Optimize database schema',
+                        'Add connection pooling'
+                    ]
+                }
+            };
+            
+            const challenge = challenges[challengeType];
+            if (!challenge) return;
+            
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">${challenge.title}</h3>
+                            <p class="text-gray-300 mb-4">${challenge.description}</p>
+                            <div class="flex items-center space-x-3">
+                                <span class="skill-badge challenge-difficulty-${challenge.difficulty.toLowerCase()}">${challenge.difficulty}</span>
+                                ${challenge.skills.map(skill => `<span class="skill-badge">${skill}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-accent-yellow">+${challenge.xp}</div>
+                            <div class="text-sm text-gray-400">XP Reward</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold mb-4">Challenge Tasks</h4>
+                        <div class="space-y-2">
+                            ${challenge.tasks.map((task, index) => `
+                                <div class="flex items-center space-x-3 p-3 glass-effect rounded-lg">
+                                    <div class="w-6 h-6 border-2 border-accent-blue rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold">${index + 1}</span>
+                                    </div>
+                                    <span>${task}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button id="startChallengeBtn" class="flex-1 px-6 py-3 btn-primary text-white rounded-xl font-bold">
+                            <i class="fas fa-play mr-2"></i>
+                            Start Challenge
+                        </button>
+                        <button class="px-6 py-3 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all font-medium">
+                            <i class="fas fa-bookmark mr-2"></i>
+                            Save for Later
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            showModal(modal);
+            
+            // Add event listener for start button
+            document.getElementById('startChallengeBtn').addEventListener('click', () => {
+                showNotification('Initializing challenge environment...', 'info');
+                setTimeout(() => {
+                    showNotification('Challenge started! Good luck!');
+                    hideModal(modal);
+                    // Simulate opening challenge environment
+                    setTimeout(() => {
+                        showNotification('Opening live coding environment...', 'info');
+                    }, 1000);
+                }, 1500);
+            });
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active state
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                
+                const tab = button.dataset.tab;
+                showNotification(`Filtering challenges: ${tab}`, 'info', 1500);
+                
+                // Simulate filtering
+                setTimeout(() => {
+                    showNotification(`Showing ${tab} challenges`);
+                }, 800);
+            });
+        });
+
+        // AI Assistant
+        const aiModal = document.getElementById('aiModal');
+        const aiChat = document.getElementById('aiChat');
+        const aiInput = document.getElementById('aiInput');
+
+        document.getElementById('aiAssistantBtn').addEventListener('click', () => showModal(aiModal));
+        document.getElementById('askAiBtn').addEventListener('click', () => showModal(aiModal));
+        document.getElementById('closeAiModal').addEventListener('click', () => hideModal(aiModal));
+
+        function addAiMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex items-start space-x-3 mb-4 ${isUser ? 'justify-end' : ''}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="bg-gradient-to-r from-accent-blue to-accent-purple rounded-xl p-4 max-w-md">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                        <span class="text-sm font-bold">JD</span>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="glass-effect rounded-xl p-4 max-w-md">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            }
+            
+            aiChat.appendChild(messageDiv);
+            aiChat.scrollTop = aiChat.scrollHeight;
+        }
+
+        document.getElementById('sendAiMessage').addEventListener('click', () => {
+            const message = aiInput.value.trim();
+            if (message) {
+                addAiMessage(message, true);
+                aiInput.value = '';
+                
+                // Simulate AI thinking
+                setTimeout(() => {
+                    const responses = [
+                        "Great question! For JWT authentication, make sure to implement proper token refresh logic and store refresh tokens securely. Also, consider using short-lived access tokens (15-30 minutes) for better security.",
+                        "I see you're working on the authentication challenge. Here's a tip: always hash passwords with bcrypt and use a salt rounds of at least 12. Also, implement rate limiting on login endpoints to prevent brute force attacks.",
+                        "For your current challenge, I recommend implementing middleware for token validation. Create a reusable middleware function that verifies JWT tokens and attaches user data to the request object.",
+                        "Excellent progress on the API challenge! For the next step, consider implementing role-based access control (RBAC). You can add user roles to your JWT payload and create middleware to check permissions.",
+                        "I notice you're working on database integration. Remember to use parameterized queries to prevent SQL injection, and consider implementing connection pooling for better performance."
+                    ];
+                    addAiMessage(responses[Math.floor(Math.random() * responses.length)]);
+                }, 1000 + Math.random() * 2000);
+            }
+        });
+
+        // AI quick buttons
+        document.querySelectorAll('.ai-quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const message = btn.textContent.trim();
+                addAiMessage(message, true);
+                
+                setTimeout(() => {
+                    const responses = {
+                        'Get a hint': "Here's a hint for your current challenge: Start by setting up your Express server with the necessary middleware (helmet, cors, express.json). Then create your user model and implement the registration endpoint with proper validation.",
+                        'Debug my code': "I can help debug your code! Common issues I see in authentication challenges: 1) Forgetting to await async operations, 2) Not handling errors properly, 3) Missing password hashing, 4) Incorrect JWT secret handling. Share your code and I'll take a look!",
+                        'Explain concept': "JWT (JSON Web Tokens) are a secure way to transmit information between parties. They consist of three parts: header (algorithm info), payload (claims/data), and signature (verification). The server signs the token, and clients include it in requests for authentication.",
+                        'Best practices': "Authentication best practices: 1) Use HTTPS always, 2) Hash passwords with bcrypt, 3) Implement rate limiting, 4) Use short-lived access tokens, 5) Store refresh tokens securely, 6) Validate all inputs, 7) Log security events, 8) Implement proper error handling without leaking info."
+                    };
+                    addAiMessage(responses[message] || "I'm analyzing your request and preparing detailed guidance based on your current progress...");
+                }, 1500);
+            });
+        });
+
+        // Modal close functionality
+        document.getElementById('closeChallengeModal').addEventListener('click', () => {
+            hideModal(document.getElementById('challengeModal'));
+        });
+
+        // Close modals on outside click
+        [document.getElementById('challengeModal'), aiModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideModal(modal);
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideModal(document.getElementById('challengeModal'));
+                hideModal(aiModal);
+            }
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                showModal(aiModal);
+                aiInput.focus();
+            }
+            if (e.ctrlKey && e.key === 'Enter' && aiModal.classList.contains('active')) {
+                document.getElementById('sendAiMessage').click();
+            }
+        });
+
+        // Enter key support
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendAiMessage').click();
+            }
+        });
+
+        // Notification button
+        document.getElementById('notificationBtn').addEventListener('click', () => {
+            showNotification('You have 3 new notifications', 'info');
+            // Simulate opening notifications panel
+            setTimeout(() => {
+                showNotification('Notifications panel opened');
+            }, 1000);
+        });
+
+        // Profile button
+        document.getElementById('profileBtn').addEventListener('click', () => {
+            showNotification('Opening profile settings...', 'info');
+            setTimeout(() => {
+                showNotification('Profile settings loaded');
+            }, 1000);
+        });
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDashboard();
+            showNotification('Dashboard loaded successfully!');
+        });
+
+        // Simulate periodic updates
+        setInterval(() => {
+            // Randomly update some stats
+            if (Math.random() > 0.7) {
+                const updates = [
+                    'New challenge completed by community member',
+                    'Your weekly goal progress updated',
+                    'Friend request received',
+                    'New achievement available',
+                    'Leaderboard position changed'
+                ];
+                const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
+                showNotification(randomUpdate, 'info', 2000);
+            }
+        }, 45000);
+
+        // Performance monitoring
+        window.addEventListener('load', () => {
+            const loadTime = performance.now();
+            console.log(`Dashboard loaded in ${Math.round(loadTime)}ms`);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97642b9e33af708a',t:'MTc1NjM4NzkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

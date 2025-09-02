@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Mentor - Practice Real Backend & Fullstack Development with AI-Powered Guidance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0d1117',
+                        'dark-surface': '#161b22',
+                        'dark-border': '#30363d',
+                        'accent-blue': '#58a6ff',
+                        'accent-red': '#f85149',
+                        'accent-purple': '#a5a5ff',
+                        'accent-green': '#3fb950'
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s infinite',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'typing': 'typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite',
+                        'matrix': 'matrix 20s linear infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tech-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .tech-icon:hover {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+        }
+        
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #58a6ff 0%, #a5a5ff 50%, #f85149 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(165, 165, 255, 0.1) 50%, rgba(248, 81, 73, 0.1) 100%);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(88, 166, 255, 0.4), 0 0 40px rgba(88, 166, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(88, 166, 255, 0.8), 0 0 80px rgba(88, 166, 255, 0.4); }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #58a6ff; }
+        }
+        
+        @keyframes matrix {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: scale(0.7) translateY(-50px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        
+        .glass-effect {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+        }
+        
+        .code-editor {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .terminal-output {
+            background: #000;
+            color: #00ff00;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 120px;
+            overflow-y: auto;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease-in-out;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #f0f6fc;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .matrix-char {
+            position: absolute;
+            color: #58a6ff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            animation: matrix 20s linear infinite;
+        }
+        
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(88, 166, 255, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #58a6ff 0%, #a5a5ff 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4493f8 0%, #9090ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(88, 166, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #f85149;
+            color: #f85149;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #f85149;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(248, 81, 73, 0.4);
+        }
+        
+        .typing-cursor::after {
+            content: '|';
+            animation: blink-caret 1s step-end infinite;
+        }
+        
+        .skill-badge {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            color: #58a6ff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-badge:hover {
+            background: rgba(88, 166, 255, 0.2);
+            border-color: #58a6ff;
+            transform: scale(1.05);
+        }
+        
+        .loading-spinner {
+            border: 2px solid #30363d;
+            border-top: 2px solid #58a6ff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .img{
+            height: 150px;
+            width: 250px;
+        }
+        @media(max-width:750px){
+
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white overflow-x-hidden">
+    <!-- Matrix Background -->
+    <div class="matrix-bg" id="matrixBg"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <!-- <div class="w-10 h-10 bg-gradient-to-r from-accent-blue to-accent-red rounded-xl flex items-center justify-center">
+                        <i class="fas fa-code text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Backend Mentor</span> -->
+                    <img src="logo.png" alt="" class="img">
+
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#challenges" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Challenges</a>
+                    <a href="#features" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Features</a>
+                    <a href="#playground" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Playground</a>
+                    <a href="#pricing" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Pricing</a>
+                    <a href="#community" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Community</a>
+                    <a href="#docs" class="hover:text-accent-blue transition-colors cursor-pointer font-medium">Docs</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- <button id="themeToggle" class="p-2 rounded-lg hover:bg-dark-surface transition-colors">
+                        <i class="fas fa-moon text-accent-blue"></i>
+                    </button> -->
+                    <button id="loginBtn" class="px-6 py-2 text-accent-blue border border-accent-blue rounded-lg hover:bg-accent-blue hover:text-white transition-all font-medium">
+                        Sign In
+                    </button>
+                    <button id="startFreeBtn" class="px-6 py-2 btn-primary text-white rounded-lg font-medium animate-pulse-glow">
+                        Start Free
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-20 px-4 sm:px-6 lg:px-10 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8 animate-slide-in-left">
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center px-4 py-2 rounded-full text-sm glass-effect">
+                            <i class="fas fa-rocket mr-2 text-accent-blue"></i>
+                            <span class="gradient-text font-semibold">AI-Powered Learning Platform</span>
+                        </div>
+                        <h1 class="text-6xl lg:text-7xl font-bold leading-tight">
+                            Practice Real <span class="gradient-text">Backend</span> & <span class="gradient-text">Fullstack</span> Development with AI-Powered Guidance
+                        </h1>
+                        <p class="text-xl text-gray-300 leading-relaxed max-w-2xl">
+                            Master backend development through real-world challenges with intelligent AI mentorship, live coding environments, and instant feedback. From REST APIs to microservices architecture.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-6">
+                        <button id="exploreChallengesBtn" class="px-8 py-4 btn-primary text-white rounded-xl font-semibold text-lg flex items-center justify-center space-x-2 group">
+                            <i class="fas fa-compass group-hover:rotate-180 transition-transform duration-300"></i>
+                            <span>Explore Challenges</span>
+                        </button>
+                        <button id="startFreeHeroBtn" class="px-8 py-4 btn-secondary rounded-xl font-semibold text-lg flex items-center justify-center space-x-2">
+                            <i class="fas fa-play"></i>
+                            <span>Start Free</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-8 pt-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold gradient-text" id="developerCount">0</div>
+                            <div class="text-sm text-gray-400 font-medium">Active Developers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold gradient-text" id="challengeCount">0</div>
+                            <div class="text-sm text-gray-400 font-medium">Live Challenges</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold gradient-text" id="successRate">0%</div>
+                            <div class="text-sm text-gray-400 font-medium">Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative animate-slide-in-right">
+                    <!-- Interactive Code Editor -->
+                    <div class="animate-float">
+                        <div class="code-editor shadow-2xl">
+                            <div class="flex items-center justify-between p-4 bg-dark-surface border-b border-dark-border">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex space-x-2">
+                                        <div class="w-3 h-3 bg-accent-red rounded-full"></div>
+                                        <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                        <div class="w-3 h-3 bg-accent-green rounded-full"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-400 font-mono">backend-api.js</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white transition-colors">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="liveEditor" class="p-6 font-mono text-sm leading-relaxed">
+                                <div class="text-accent-purple">// AI-Guided Backend Development</div>
+                                <div><span class="text-accent-red">const</span> <span class="text-accent-blue">express</span> = <span class="text-accent-green">require</span>(<span class="text-yellow-300">'express'</span>);</div>
+                                <div><span class="text-accent-red">const</span> <span class="text-accent-blue">cors</span> = <span class="text-accent-green">require</span>(<span class="text-yellow-300">'cors'</span>);</div>
+                                <div><span class="text-accent-red">const</span> <span class="text-accent-blue">helmet</span> = <span class="text-accent-green">require</span>(<span class="text-yellow-300">'helmet'</span>);</div>
+                                <div></div>
+                                <div><span class="text-accent-red">const</span> <span class="text-accent-blue">app</span> = <span class="text-accent-blue">express</span>();</div>
+                                <div></div>
+                                <div><span class="text-accent-purple">// AI: Security middleware recommended</span></div>
+                                <div><span class="text-accent-blue">app</span>.<span class="text-yellow-300">use</span>(<span class="text-accent-blue">helmet</span>());</div>
+                                <div><span class="text-accent-blue">app</span>.<span class="text-yellow-300">use</span>(<span class="text-accent-blue">cors</span>());</div>
+                                <div><span class="text-accent-blue">app</span>.<span class="text-yellow-300">use</span>(<span class="text-accent-blue">express</span>.<span class="text-yellow-300">json</span>());</div>
+                                <div></div>
+                                <div><span class="text-accent-blue">app</span>.<span class="text-yellow-300">post</span>(<span class="text-yellow-300">'/api/users'</span>, <span class="text-accent-red">async</span> (<span class="text-accent-blue">req, res</span>) => {</div>
+                                <div class="pl-4"><span class="text-accent-purple">// AI: Validate input data</span></div>
+                                <div class="pl-4"><span class="text-accent-red">try</span> {</div>
+                                <div class="pl-8"><span class="text-accent-red">const</span> <span class="text-accent-blue">user</span> = <span class="text-accent-red">await</span> <span class="text-accent-green">createUser</span>(<span class="text-accent-blue">req.body</span>);</div>
+                                <div class="pl-8"><span class="text-accent-blue">res</span>.<span class="text-yellow-300">status</span>(<span class="text-accent-green">201</span>).<span class="text-yellow-300">json</span>(<span class="text-accent-blue">user</span>);</div>
+                                <div class="pl-4">} <span class="text-accent-red">catch</span> (<span class="text-accent-blue">error</span>) {</div>
+                                <div class="pl-8"><span class="text-accent-blue">res</span>.<span class="text-yellow-300">status</span>(<span class="text-accent-red">400</span>).<span class="text-yellow-300">json</span>({ <span class="text-accent-blue">error</span> });</div>
+                                <div class="pl-4">}</div>
+                                <div>});</div>
+                                <div></div>
+                                <div><span class="text-accent-blue">app</span>.<span class="text-yellow-300">listen</span>(<span class="text-accent-green">3000</span>, () => {</div>
+                                <div class="pl-4"><span class="text-accent-blue">console</span>.<span class="text-yellow-300">log</span>(<span class="text-yellow-300">'🚀 Server running on port 3000'</span>);</div>
+                                <div>});</div>
+                            </div>
+                            
+                            <div class="p-4 bg-dark-surface border-t border-dark-border flex justify-between items-center">
+                                <div class="flex space-x-3">
+                                    <button id="runCodeBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg text-sm hover:bg-green-600 transition-colors flex items-center space-x-2">
+                                        <i class="fas fa-play"></i>
+                                        <span>Run Code</span>
+                                    </button>
+                                    <button id="aiHelpBtn" class="px-4 py-2 bg-accent-purple text-white rounded-lg text-sm hover:bg-purple-600 transition-colors flex items-center space-x-2">
+                                        <i class="fas fa-robot"></i>
+                                        <span>AI Help</span>
+                                    </button>
+                                    <button id="shareCodeBtn" class="px-4 py-2 bg-accent-blue text-white rounded-lg text-sm hover:bg-blue-600 transition-colors flex items-center space-x-2">
+                                        <i class="fas fa-share"></i>
+                                        <span>Share</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-gray-400">
+                                    <i class="fas fa-check-circle text-accent-green"></i>
+                                    <span>Tests: 12/12</span>
+                                </div>
+                            </div>
+                            
+                            <div id="codeOutput" class="hidden">
+                                <div class="terminal-output">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-terminal text-accent-green"></i>
+                                        <span class="text-accent-green">Terminal Output</span>
+                                    </div>
+                                    <div id="terminalContent">
+                                        <div>🚀 Server starting...</div>
+                                        <div>✅ Database connected successfully</div>
+                                        <div>✅ Middleware loaded</div>
+                                        <div>✅ Routes registered</div>
+                                        <div>🚀 Server running on port 3000</div>
+                                        <div>✅ All tests passed (12/12)</div>
+                                        <div class="text-accent-blue">Ready to accept connections!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating AI Assistant -->
+                    <div class="absolute -right-6 top-1/2 transform -translate-y-1/2">
+                        <div id="aiAssistant" class="relative">
+                            <div class="w-16 h-16 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform animate-pulse-glow">
+                                <i class="fas fa-robot text-white text-xl"></i>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-accent-green rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div id="aiTooltip" class="absolute -left-48 top-1/2 transform -translate-y-1/2 glass-effect rounded-xl p-4 shadow-lg opacity-0 transition-opacity pointer-events-none">
+                            <div class="text-sm font-medium">💡 AI Mentor Online</div>
+                            <div class="text-xs text-gray-400 mt-1">Click for instant help!</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Code Metrics -->
+                    <div class="absolute -left-6 top-20 glass-effect rounded-xl p-4 shadow-lg">
+                        <div class="text-xs text-gray-400 mb-2">Code Quality</div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8">
+                                <svg class="progress-ring w-8 h-8">
+                                    <circle class="progress-ring-circle stroke-accent-green" stroke-width="2" fill="transparent" r="12" cx="16" cy="16" style="stroke-dashoffset: 62.8;"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-accent-green">95%</div>
+                                <div class="text-xs text-gray-400">Excellent</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Features Showcase -->
+    <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 animate-fade-in-up">
+                <h2 class="text-5xl font-bold mb-6">Revolutionary <span class="gradient-text">Learning Experience</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">AI Assistant, Live Editor, API Playground, and Real-time Collaboration - All in One Innovative Platform</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-8 mb-16">
+                <!-- AI Assistant Feature -->
+                <div class="feature-card glass-effect rounded-2xl p-8 cursor-pointer group" id="aiFeatureCard">
+                    <div class="w-20 h-20 bg-gradient-to-r from-accent-blue to-accent-purple rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-robot text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">AI Mentor Assistant</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Context-aware AI that provides real-time hints, debugging help, code reviews, and explains complex concepts with personalized learning paths.</p>
+                    <div class="flex items-center justify-between">
+                        <button class="px-6 py-3 bg-accent-blue/20 text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all font-medium">
+                            Try AI Assistant
+                        </button>
+                        <div class="flex items-center space-x-1 text-sm text-gray-400">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span>4.9/5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Live Editor Feature -->
+                <div class="feature-card glass-effect rounded-2xl p-8 cursor-pointer group" id="editorFeatureCard">
+                    <div class="w-20 h-20 bg-gradient-to-r from-accent-red to-accent-purple rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-code text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Live Coding Environment</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Monaco Editor with IntelliSense, syntax highlighting, real-time collaboration, instant code execution, and integrated debugging tools.</p>
+                    <div class="flex items-center justify-between">
+                        <button class="px-6 py-3 bg-accent-red/20 text-accent-red rounded-xl hover:bg-accent-red hover:text-white transition-all font-medium">
+                            Open Live Editor
+                        </button>
+                        <div class="flex items-center space-x-1 text-sm text-gray-400">
+                            <i class="fas fa-users"></i>
+                            <span>Real-time</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Playground Feature -->
+                <div class="feature-card glass-effect rounded-2xl p-8 cursor-pointer group" id="apiFeatureCard">
+                    <div class="w-20 h-20 bg-gradient-to-r from-accent-purple to-accent-blue rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-network-wired text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">API Playground</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">Built-in Postman-like interface for testing APIs, viewing responses, debugging endpoints, and generating API documentation automatically.</p>
+                    <div class="flex items-center justify-between">
+                        <button class="px-6 py-3 bg-accent-purple/20 text-accent-purple rounded-xl hover:bg-accent-purple hover:text-white transition-all font-medium">
+                            Launch Playground
+                        </button>
+                        <div class="flex items-center space-x-1 text-sm text-gray-400">
+                            <i class="fas fa-bolt"></i>
+                            <span>Instant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Features Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                    <i class="fas fa-trophy text-accent-green text-2xl mb-3"></i>
+                    <h4 class="font-semibold mb-2">Gamified Learning</h4>
+                    <p class="text-sm text-gray-400">XP, badges, streaks, leaderboards</p>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                    <i class="fas fa-users text-accent-blue text-2xl mb-3"></i>
+                    <h4 class="font-semibold mb-2">Pair Programming</h4>
+                    <p class="text-sm text-gray-400">Real-time collaboration</p>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                    <i class="fas fa-download text-accent-purple text-2xl mb-3"></i>
+                    <h4 class="font-semibold mb-2">Challenge Packages</h4>
+                    <p class="text-sm text-gray-400">Complete project templates</p>
+                </div>
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                    <i class="fas fa-chart-line text-accent-red text-2xl mb-3"></i>
+                    <h4 class="font-semibold mb-2">Progress Analytics</h4>
+                    <p class="text-sm text-gray-400">Detailed learning insights</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Playground -->
+    <section id="playground" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold mb-6">Experience the <span class="gradient-text">Platform</span></h2>
+                <p class="text-xl text-gray-300">Try our interactive features right now - no signup required</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Interactive API Playground -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold">API Testing Playground</h3>
+                        <div class="flex space-x-2">
+                            <button id="getBtn" class="px-4 py-2 bg-accent-green text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors">GET</button>
+                            <button id="postBtn" class="px-4 py-2 bg-accent-blue text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">POST</button>
+                            <button id="putBtn" class="px-4 py-2 bg-accent-purple text-white rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors">PUT</button>
+                            <button id="deleteBtn" class="px-4 py-2 bg-accent-red text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors">DELETE</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">API Endpoint</label>
+                            <div class="relative">
+                                <input id="apiUrl" type="text" value="https://jsonplaceholder.typicode.com/posts" 
+                                       class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none font-mono">
+                                <button id="pasteBtn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                                    <i class="fas fa-paste"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="requestBody" class="hidden">
+                            <label class="block text-sm font-medium mb-2">Request Body (JSON)</label>
+                            <textarea class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none font-mono h-24" 
+                                      placeholder='{"title": "Test Post", "body": "This is a test", "userId": 1}'></textarea>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="sendRequestBtn" class="flex-1 px-6 py-3 btn-primary text-white rounded-xl font-medium flex items-center justify-center space-x-2">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Send Request</span>
+                            </button>
+                            <button id="clearBtn" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="apiResponse" class="hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="block text-sm font-medium">Response</label>
+                                <div class="flex items-center space-x-2">
+                                    <span id="responseStatus" class="px-2 py-1 bg-accent-green text-white rounded text-xs font-medium">200 OK</span>
+                                    <span id="responseTime" class="text-xs text-gray-400">245ms</span>
+                                </div>
+                            </div>
+                            <div class="bg-dark-bg border border-dark-border rounded-xl p-4 max-h-64 overflow-y-auto">
+                                <pre id="responseContent" class="text-sm font-mono text-gray-300"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learning Progress Dashboard -->
+                <div class="glass-effect rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold mb-6">Your Learning Journey</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Skill Progress -->
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium">Backend Fundamentals</span>
+                                <span class="text-accent-blue font-semibold">85%</span>
+                            </div>
+                            <div class="w-full bg-dark-border rounded-full h-3">
+                                <div class="bg-gradient-to-r from-accent-blue to-accent-purple h-3 rounded-full transition-all duration-1000" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium">API Development</span>
+                                <span class="text-accent-green font-semibold">72%</span>
+                            </div>
+                            <div class="w-full bg-dark-border rounded-full h-3">
+                                <div class="bg-gradient-to-r from-accent-green to-accent-blue h-3 rounded-full transition-all duration-1000" style="width: 72%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium">Database Design</span>
+                                <span class="text-accent-purple font-semibold">58%</span>
+                            </div>
+                            <div class="w-full bg-dark-border rounded-full h-3">
+                                <div class="bg-gradient-to-r from-accent-purple to-accent-red h-3 rounded-full transition-all duration-1000" style="width: 58%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-medium">DevOps & Deployment</span>
+                                <span class="text-accent-red font-semibold">34%</span>
+                            </div>
+                            <div class="w-full bg-dark-border rounded-full h-3">
+                                <div class="bg-gradient-to-r from-accent-red to-accent-purple h-3 rounded-full transition-all duration-1000" style="width: 34%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Level & XP -->
+                        <div class="pt-6 border-t border-dark-border">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="text-3xl font-bold gradient-text">Level 15</div>
+                                    <div class="text-sm text-gray-400">Senior Backend Developer</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold">3,750 XP</div>
+                                    <div class="text-sm text-gray-400">250 to next level</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Achievements -->
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-3 p-3 bg-dark-bg rounded-lg">
+                                    <i class="fas fa-trophy text-accent-green"></i>
+                                    <div>
+                                        <div class="text-sm font-medium">API Master</div>
+                                        <div class="text-xs text-gray-400">Completed 10 API challenges</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 p-3 bg-dark-bg rounded-lg">
+                                    <i class="fas fa-fire text-accent-red"></i>
+                                    <div>
+                                        <div class="text-sm font-medium">7-Day Streak</div>
+                                        <div class="text-xs text-gray-400">Keep it up!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <section id="technologies" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">
+                <span class="text-white">Master</span>
+                <span class="bg-gradient-to-r from-electric-blue-400 to-neon-red-400 bg-clip-text "> Modern Tech Stack</span>
+            </h2>
+            <p class="text-xl text-gray-400 mb-16 max-w-3xl mx-auto">
+                Practice with the technologies that power today's most successful applications
+            </p>
+            
+            <!-- Tech Icons Grid -->
+            <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-8 mb-16">
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-node-js text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">Node.js</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-python text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">Python</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-java text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">Java</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-database text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">MongoDB</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-database text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">PostgreSQL</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-aws text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">AWS</span>
+                </div>
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-php text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">PHP</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-blue-400 rounded-xl flex items-center justify-center">
+                        <i class="fab fa-docker text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">Docker</span>
+                </div>
+                
+                <div class="tech-icon flex flex-col items-center space-y-3">
+                    <div class="w-16 h-16 bg-pink-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-code text-white text-2xl"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">GraphQL</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold mb-6">Choose Your <span class="gradient-text">Learning Path</span></h2>
+                <p class="text-xl text-gray-300">Start free, upgrade when you're ready to accelerate</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Free Plan -->
+                <div class="glass-effect rounded-2xl p-8 hover:scale-105 transition-transform">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold mb-2">$0</div>
+                        <div class="text-gray-400">Forever free</div>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>5 challenges per month</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Basic AI assistance</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Community access</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Progress tracking</span>
+                        </li>
+                    </ul>
+                    <button class="w-full px-6 py-3 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all font-medium">
+                        Get Started Free
+                    </button>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="glass-effect rounded-2xl p-8 border-2 border-accent-blue relative hover:scale-105 transition-transform">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-accent-blue text-white rounded-full text-sm font-medium">
+                        Most Popular
+                    </div>
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold mb-2">Pro</h3>
+                        <div class="text-4xl font-bold mb-2">$29</div>
+                        <div class="text-gray-400">per month</div>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Unlimited challenges</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Advanced AI mentor</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Live coding sessions</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Priority support</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Certificate of completion</span>
+                        </li>
+                    </ul>
+                    <button class="w-full px-6 py-3 btn-primary text-white rounded-xl font-medium">
+                        Start Pro Trial
+                    </button>
+                </div>
+                
+                <!-- Enterprise Plan -->
+                <div class="glass-effect rounded-2xl p-8 hover:scale-105 transition-transform">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold mb-2">$99</div>
+                        <div class="text-gray-400">per month</div>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Everything in Pro</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Team collaboration</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Custom challenges</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Analytics dashboard</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-accent-green"></i>
+                            <span>Dedicated support</span>
+                        </li>
+                    </ul>
+                    <button class="w-full px-6 py-3 border border-accent-purple text-accent-purple rounded-xl hover:bg-accent-purple hover:text-white transition-all font-medium">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold mb-6">Join Our <span class="gradient-text">Developer Community</span></h2>
+                <p class="text-xl text-gray-300">Connect, learn, and grow with thousands of backend developers</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fab fa-discord text-4xl text-accent-blue mb-4"></i>
+                    <h4 class="font-bold mb-2">Discord Server</h4>
+                    <p class="text-sm text-gray-400 mb-4">24/7 community support</p>
+                    <div class="text-accent-green font-semibold">15K+ Members</div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fab fa-github text-4xl text-gray-300 mb-4"></i>
+                    <h4 class="font-bold mb-2">GitHub</h4>
+                    <p class="text-sm text-gray-400 mb-4">Open source challenges</p>
+                    <div class="text-accent-green font-semibold">2K+ Stars</div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fab fa-youtube text-4xl text-accent-red mb-4"></i>
+                    <h4 class="font-bold mb-2">YouTube</h4>
+                    <p class="text-sm text-gray-400 mb-4">Video tutorials</p>
+                    <div class="text-accent-green font-semibold">50K+ Subs</div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fab fa-twitter text-4xl text-accent-blue mb-4"></i>
+                    <h4 class="font-bold mb-2">Twitter</h4>
+                    <p class="text-sm text-gray-400 mb-4">Daily tips & updates</p>
+                    <div class="text-accent-green font-semibold">25K+ Followers</div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button id="joinCommunityBtn" class="px-8 py-4 btn-primary text-white rounded-xl font-semibold text-lg">
+                    <i class="fas fa-users mr-2"></i>
+                    Join Community
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold mb-6">Comprehensive <span class="gradient-text">Documentation</span></h2>
+                <p class="text-xl text-gray-300">Everything you need to master backend development</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="glass-effect rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fas fa-book text-3xl text-accent-blue mb-4"></i>
+                    <h4 class="text-xl font-bold mb-3">Getting Started</h4>
+                    <p class="text-gray-400 mb-4">Complete beginner's guide to backend development</p>
+                    <div class="flex items-center text-accent-blue">
+                        <span class="text-sm font-medium">Read Guide</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fas fa-code text-3xl text-accent-green mb-4"></i>
+                    <h4 class="text-xl font-bold mb-3">API Reference</h4>
+                    <p class="text-gray-400 mb-4">Complete API documentation with examples</p>
+                    <div class="flex items-center text-accent-green">
+                        <span class="text-sm font-medium">View API</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer">
+                    <i class="fas fa-video text-3xl text-accent-red mb-4"></i>
+                    <h4 class="text-xl font-bold mb-3">Video Tutorials</h4>
+                    <p class="text-gray-400 mb-4">Step-by-step video guides and walkthroughs</p>
+                    <div class="flex items-center text-accent-red">
+                        <span class="text-sm font-medium">Watch Now</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text">Join Backend Mentor</h2>
+                <button id="closeAuthModal" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="authStep1" class="space-y-6">
+                <div class="text-center mb-8">
+                    <p class="text-gray-300 text-lg">Start your backend development journey today</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <button id="githubAuth" class="w-full px-6 py-4 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-all flex items-center justify-center space-x-3 font-medium">
+                        <i class="fab fa-github text-2xl"></i>
+                        <span>Continue with GitHub</span>
+                    </button>
+                    
+                    <button id="googleAuth" class="w-full px-6 py-4 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-all flex items-center justify-center space-x-3 font-medium">
+                        <i class="fab fa-google text-2xl"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                </div>
+                
+                <div class="relative my-8">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-dark-border"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-dark-surface text-gray-400">or continue with email</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <input id="emailInput" type="email" placeholder="Enter your email address" 
+                           class="w-full px-4 py-4 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none">
+                    <input id="passwordInput" type="password" placeholder="Create a password" 
+                           class="w-full px-4 py-4 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none">
+                    <button id="emailSignup" class="w-full px-6 py-4 btn-primary text-white rounded-xl font-medium">
+                        Create Account
+                    </button>
+                </div>
+                
+                <div class="text-center text-sm text-gray-400">
+                    Already have an account? 
+                    <button id="switchToLogin" class="text-accent-blue hover:underline">Sign in</button>
+                </div>
+            </div>
+            
+            <!-- Onboarding Wizard -->
+            <div id="onboardingStep" class="space-y-8 hidden">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold mb-3">Customize Your Learning Experience</h3>
+                    <p class="text-gray-400">Help us personalize your journey</p>
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4">Choose Your Track</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="track-option p-6 border-2 border-dark-border rounded-xl hover:border-accent-blue transition-all text-center" data-track="backend">
+                            <i class="fas fa-server text-accent-blue text-3xl mb-3"></i>
+                            <div class="font-bold text-lg">Backend</div>
+                            <div class="text-sm text-gray-400 mt-2">APIs, Databases, Servers, Microservices</div>
+                        </button>
+                        
+                        <button class="track-option p-6 border-2 border-dark-border rounded-xl hover:border-accent-red transition-all text-center" data-track="fullstack">
+                            <i class="fas fa-layer-group text-accent-red text-3xl mb-3"></i>
+                            <div class="font-bold text-lg">Fullstack</div>
+                            <div class="text-sm text-gray-400 mt-2">Frontend + Backend + DevOps</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4">Select Your Preferred Languages</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="lang-option skill-badge text-center py-3" data-lang="javascript">
+                            <i class="fab fa-js-square text-xl mb-1"></i>
+                            <div>JavaScript</div>
+                        </button>
+                        <button class="lang-option skill-badge text-center py-3" data-lang="python">
+                            <i class="fab fa-python text-xl mb-1"></i>
+                            <div>Python</div>
+                        </button>
+                        <button class="lang-option skill-badge text-center py-3" data-lang="java">
+                            <i class="fab fa-java text-xl mb-1"></i>
+                            <div>Java</div>
+                        </button>
+                        <button class="lang-option skill-badge text-center py-3" data-lang="csharp">
+                            <i class="fas fa-hashtag text-xl mb-1"></i>
+                            <div>C#</div>
+                        </button>
+                        <button class="lang-option skill-badge text-center py-3" data-lang="go">
+                            <i class="fas fa-code text-xl mb-1"></i>
+                            <div>Go</div>
+                        </button>
+                        <button class="lang-option skill-badge text-center py-3" data-lang="rust">
+                            <i class="fas fa-cog text-xl mb-1"></i>
+                            <div>Rust</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4">Experience Level</label>
+                    <div class="space-y-3">
+                        <button class="exp-option w-full p-4 border border-dark-border rounded-xl hover:border-accent-blue transition-all text-left" data-exp="beginner">
+                            <div class="font-medium">Beginner</div>
+                            <div class="text-sm text-gray-400">New to backend development</div>
+                        </button>
+                        <button class="exp-option w-full p-4 border border-dark-border rounded-xl hover:border-accent-blue transition-all text-left" data-exp="intermediate">
+                            <div class="font-medium">Intermediate</div>
+                            <div class="text-sm text-gray-400">Some experience with APIs and databases</div>
+                        </button>
+                        <button class="exp-option w-full p-4 border border-dark-border rounded-xl hover:border-accent-blue transition-all text-left" data-exp="advanced">
+                            <div class="font-medium">Advanced</div>
+                            <div class="text-sm text-gray-400">Experienced with complex systems</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="completeOnboarding" class="w-full px-6 py-4 bg-gradient-to-r from-accent-blue via-accent-purple to-accent-red text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all">
+                    🚀 Start My Journey
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">AI Mentor Assistant</h2>
+                </div>
+                <button id="closeAiModal" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-dark-bg rounded-xl p-4 max-h-80 overflow-y-auto" id="aiChat">
+                    <div class="flex items-start space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div class="glass-effect rounded-xl p-4 max-w-md">
+                            <p class="text-sm">👋 Hi! I'm your AI mentor. I can help you with:</p>
+                            <ul class="text-sm mt-2 space-y-1">
+                                <li>• Code reviews and debugging</li>
+                                <li>• Concept explanations</li>
+                                <li>• Best practices and optimization</li>
+                                <li>• Learning path recommendations</li>
+                            </ul>
+                            <p class="text-sm mt-2">What would you like to work on today?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <input id="aiInput" type="text" placeholder="Ask me anything about backend development..." 
+                           class="flex-1 px-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-white focus:border-accent-blue focus:outline-none">
+                    <button id="sendAiMessage" class="px-6 py-3 btn-primary text-white rounded-xl hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-search mr-2"></i>
+                        Explain this code
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-bug mr-2"></i>
+                        Find bugs
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Optimize performance
+                    </button>
+                    <button class="ai-quick-btn px-4 py-3 glass-effect rounded-xl text-sm hover:border-accent-blue transition-all">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Best practices
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-accent-green text-xl"></i>
+            <div>
+                <div class="font-semibold">Success!</div>
+                <div class="text-sm text-gray-400">Action completed successfully</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let selectedTrack = '';
+        let selectedLanguages = [];
+        let selectedExperience = '';
+
+        // Utility functions
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.getElementById('notification');
+            const icon = type === 'success' ? 'fa-check-circle text-accent-green' : 
+                        type === 'error' ? 'fa-exclamation-circle text-accent-red' : 
+                        'fa-info-circle text-accent-blue';
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas ${icon} text-xl"></i>
+                    <div>
+                        <div class="font-semibold">${type.charAt(0).toUpperCase() + type.slice(1)}!</div>
+                        <div class="text-sm text-gray-400">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), duration);
+        }
+
+        function showModal(modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Animation counters with realistic API simulation
+        function animateCounter(element, target, duration = 2000, suffix = '') {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target.toLocaleString() + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start).toLocaleString() + suffix;
+                }
+            }, 16);
+        }
+
+        // Initialize counters with real-time data simulation
+        setTimeout(() => {
+            // Simulate fetching real-time stats
+            showNotification('Loading real-time statistics...', 'info', 1500);
+            
+            setTimeout(() => {
+                animateCounter(document.getElementById('developerCount'), 52847);
+                animateCounter(document.getElementById('challengeCount'), 247);
+                animateCounter(document.getElementById('successRate'), 94, 2000, '%');
+            }, 1000);
+        }, 500);
+
+        // Matrix background effect
+        function createMatrixEffect() {
+            const matrixBg = document.getElementById('matrixBg');
+            const chars = '01';
+            
+            for (let i = 0; i < 50; i++) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                char.style.left = Math.random() * 100 + '%';
+                char.style.animationDelay = Math.random() * 20 + 's';
+                char.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                matrixBg.appendChild(char);
+            }
+        }
+
+        // Initialize matrix effect
+        createMatrixEffect();
+
+        // Modal references
+        const authModal = document.getElementById('authModal');
+        const aiModal = document.getElementById('aiModal');
+
+        // Authentication flow
+        document.getElementById('loginBtn').addEventListener('click', () => showModal(authModal));
+        document.getElementById('startFreeBtn').addEventListener('click', () => showModal(authModal));
+        document.getElementById('startFreeHeroBtn').addEventListener('click', () => showModal(authModal));
+        document.getElementById('closeAuthModal').addEventListener('click', () => hideModal(authModal));
+
+        // OAuth authentication with real redirect simulation
+        document.getElementById('githubAuth').addEventListener('click', async () => {
+            showNotification('Redirecting to GitHub OAuth...', 'info');
+            
+            // Simulate OAuth flow
+            setTimeout(() => {
+                showNotification('GitHub authentication successful!');
+                document.getElementById('authStep1').classList.add('hidden');
+                document.getElementById('onboardingStep').classList.remove('hidden');
+            }, 2000);
+        });
+
+        document.getElementById('googleAuth').addEventListener('click', async () => {
+            showNotification('Redirecting to Google OAuth...', 'info');
+            
+            // Simulate OAuth flow
+            setTimeout(() => {
+                showNotification('Google authentication successful!');
+                document.getElementById('authStep1').classList.add('hidden');
+                document.getElementById('onboardingStep').classList.remove('hidden');
+            }, 2000);
+        });
+
+        // Email signup with validation
+        document.getElementById('emailSignup').addEventListener('click', () => {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!email || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            showNotification('Creating your account...');
+            
+            // Simulate account creation
+            setTimeout(() => {
+                showNotification('Account created successfully!');
+                document.getElementById('authStep1').classList.add('hidden');
+                document.getElementById('onboardingStep').classList.remove('hidden');
+            }, 1500);
+        });
+
+        // Onboarding wizard
+        document.querySelectorAll('.track-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.track-option').forEach(b => {
+                    b.classList.remove('border-accent-blue', 'bg-accent-blue/10');
+                });
+                btn.classList.add('border-accent-blue', 'bg-accent-blue/10');
+                selectedTrack = btn.dataset.track;
+            });
+        });
+
+        document.querySelectorAll('.lang-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                if (selectedLanguages.includes(lang)) {
+                    selectedLanguages = selectedLanguages.filter(l => l !== lang);
+                    btn.classList.remove('border-accent-blue', 'bg-accent-blue/10');
+                } else {
+                    selectedLanguages.push(lang);
+                    btn.classList.add('border-accent-blue', 'bg-accent-blue/10');
+                }
+            });
+        });
+
+        document.querySelectorAll('.exp-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.exp-option').forEach(b => {
+                    b.classList.remove('border-accent-blue', 'bg-accent-blue/10');
+                });
+                btn.classList.add('border-accent-blue', 'bg-accent-blue/10');
+                selectedExperience = btn.dataset.exp;
+            });
+        });
+
+        document.getElementById('completeOnboarding').addEventListener('click', () => {
+            if (!selectedTrack || selectedLanguages.length === 0 || !selectedExperience) {
+                showNotification('Please complete all onboarding steps', 'error');
+                return;
+            }
+            
+            const userData = {
+                track: selectedTrack,
+                languages: selectedLanguages,
+                experience: selectedExperience,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Simulate saving user preferences
+            localStorage.setItem('backendMentorUser', JSON.stringify(userData));
+            
+            showNotification(`Welcome! Starting your ${selectedTrack} journey with ${selectedLanguages.join(', ')}`);
+            hideModal(authModal);
+            
+            setTimeout(() => {
+                showNotification('Personalizing your dashboard...', 'info');
+                setTimeout(() => {
+                    window.location.href = '#challenges';
+                }, 2000);
+            }, 1500);
+        });
+
+        // Live editor functionality
+        document.getElementById('runCodeBtn').addEventListener('click', () => {
+            const output = document.getElementById('codeOutput');
+            const terminalContent = document.getElementById('terminalContent');
+            
+            showNotification('Executing code...', 'info');
+            
+            // Simulate code execution
+            setTimeout(() => {
+                output.classList.remove('hidden');
+                
+                // Animate terminal output
+                const lines = terminalContent.children;
+                Array.from(lines).forEach((line, index) => {
+                    setTimeout(() => {
+                        line.style.opacity = '1';
+                        line.style.transform = 'translateX(0)';
+                    }, index * 200);
+                });
+                
+                showNotification('Code executed successfully!');
+            }, 1000);
+        });
+
+        document.getElementById('aiHelpBtn').addEventListener('click', () => {
+            showModal(aiModal);
+        });
+
+        document.getElementById('shareCodeBtn').addEventListener('click', () => {
+            // Simulate sharing functionality
+            const shareUrl = `https://backendmentor.dev/share/${Math.random().toString(36).substr(2, 9)}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out my Backend Mentor code!',
+                    url: shareUrl
+                });
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                showNotification('Share link copied to clipboard!');
+            }
+        });
+
+        // AI Assistant functionality
+        document.getElementById('aiAssistant').addEventListener('click', () => showModal(aiModal));
+        document.getElementById('closeAiModal').addEventListener('click', () => hideModal(aiModal));
+
+        const aiChat = document.getElementById('aiChat');
+        const aiInput = document.getElementById('aiInput');
+
+        function addAiMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex items-start space-x-3 mb-4 ${isUser ? 'justify-end' : ''}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="bg-gradient-to-r from-accent-blue to-accent-purple rounded-xl p-4 max-w-md">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent-blue to-accent-purple rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="glass-effect rounded-xl p-4 max-w-md">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            }
+            
+            aiChat.appendChild(messageDiv);
+            aiChat.scrollTop = aiChat.scrollHeight;
+        }
+
+        document.getElementById('sendAiMessage').addEventListener('click', () => {
+            const message = aiInput.value.trim();
+            if (message) {
+                addAiMessage(message, true);
+                aiInput.value = '';
+                
+                // Simulate AI thinking
+                setTimeout(() => {
+                    const responses = [
+                        "Great question! For better error handling in Express.js, I recommend using try-catch blocks with async/await and implementing a global error handler middleware. This ensures all errors are caught and handled consistently.",
+                        "I see you're working on API development. Here's a pro tip: always validate input data using libraries like Joi or express-validator before processing. This prevents security vulnerabilities and improves data integrity.",
+                        "That's an excellent approach! For authentication, consider implementing JWT tokens with refresh token rotation. Also, don't forget to hash passwords using bcrypt with a salt rounds of at least 12.",
+                        "Perfect timing for this question! For database optimization, implement connection pooling, use indexes strategically, and consider implementing caching with Redis for frequently accessed data.",
+                        "I love helping with architecture decisions! For microservices, start with a monolith and extract services as you identify clear boundaries. Use API gateways for routing and implement proper service discovery."
+                    ];
+                    addAiMessage(responses[Math.floor(Math.random() * responses.length)]);
+                }, 1000 + Math.random() * 2000);
+            }
+        });
+
+        // AI quick buttons
+        document.querySelectorAll('.ai-quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const message = btn.textContent.trim();
+                addAiMessage(message, true);
+                
+                setTimeout(() => {
+                    const responses = {
+                        'Explain this code': "This Express.js code creates a robust API server with security middleware. The helmet() adds security headers, cors() enables cross-origin requests, and the async/await pattern with try-catch ensures proper error handling for database operations.",
+                        'Find bugs': "I've analyzed your code and found a few potential issues: 1) Missing input validation on req.body, 2) No rate limiting implemented, 3) Error messages might leak sensitive information. I recommend adding express-validator, express-rate-limit, and sanitizing error responses.",
+                        'Optimize performance': "Here are key optimizations: 1) Implement database connection pooling, 2) Add Redis caching for frequently accessed data, 3) Use compression middleware, 4) Implement proper indexing on database queries, 5) Consider using a CDN for static assets.",
+                        'Best practices': "Following Node.js best practices: 1) Use environment variables for configuration, 2) Implement proper logging with Winston, 3) Use PM2 for process management, 4) Set up health check endpoints, 5) Implement graceful shutdown handling, 6) Use TypeScript for better type safety."
+                    };
+                    addAiMessage(responses[message] || "I'm analyzing your request. Let me provide some detailed insights and recommendations based on current best practices...");
+                }, 1500);
+            });
+        });
+
+        // API Playground functionality
+        let currentMethod = 'GET';
+
+        document.getElementById('getBtn').addEventListener('click', () => setApiMethod('GET'));
+        document.getElementById('postBtn').addEventListener('click', () => setApiMethod('POST'));
+        document.getElementById('putBtn').addEventListener('click', () => setApiMethod('PUT'));
+        document.getElementById('deleteBtn').addEventListener('click', () => setApiMethod('DELETE'));
+
+        function setApiMethod(method) {
+            currentMethod = method;
+            
+            // Update button states
+            document.querySelectorAll('#getBtn, #postBtn, #putBtn, #deleteBtn').forEach(btn => {
+                btn.classList.remove('bg-accent-green', 'bg-accent-blue', 'bg-accent-purple', 'bg-accent-red');
+                btn.classList.add('bg-gray-600');
+            });
+            
+            const colors = {
+                'GET': 'bg-accent-green',
+                'POST': 'bg-accent-blue', 
+                'PUT': 'bg-accent-purple',
+                'DELETE': 'bg-accent-red'
+            };
+            
+            document.getElementById(`${method.toLowerCase()}Btn`).classList.remove('bg-gray-600');
+            document.getElementById(`${method.toLowerCase()}Btn`).classList.add(colors[method]);
+            
+            // Show/hide request body for methods that need it
+            const requestBody = document.getElementById('requestBody');
+            if (['POST', 'PUT'].includes(method)) {
+                requestBody.classList.remove('hidden');
+            } else {
+                requestBody.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('sendRequestBtn').addEventListener('click', async () => {
+            const url = document.getElementById('apiUrl').value;
+            const responseDiv = document.getElementById('apiResponse');
+            const statusSpan = document.getElementById('responseStatus');
+            const timeSpan = document.getElementById('responseTime');
+            const contentPre = document.getElementById('responseContent');
+            
+            if (!url) {
+                showNotification('Please enter an API endpoint', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('Sending API request...', 'info');
+                const startTime = Date.now();
+                
+                const options = {
+                    method: currentMethod,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (['POST', 'PUT'].includes(currentMethod)) {
+                    const bodyText = document.querySelector('#requestBody textarea').value;
+                    if (bodyText) {
+                        try {
+                            options.body = JSON.stringify(JSON.parse(bodyText));
+                        } catch (e) {
+                            showNotification('Invalid JSON in request body', 'error');
+                            return;
+                        }
+                    }
+                }
+                
+                const response = await fetch(url, options);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                // Update response display
+                responseDiv.classList.remove('hidden');
+                statusSpan.textContent = `${response.status} ${response.statusText}`;
+                statusSpan.className = `px-2 py-1 rounded text-xs font-medium ${
+                    response.ok ? 'bg-accent-green text-white' : 'bg-accent-red text-white'
+                }`;
+                timeSpan.textContent = `${responseTime}ms`;
+                
+                if (typeof data === 'object') {
+                    contentPre.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    contentPre.textContent = data;
+                }
+                
+                showNotification(`API request completed (${response.status})`);
+                
+            } catch (error) {
+                responseDiv.classList.remove('hidden');
+                statusSpan.textContent = 'Error';
+                statusSpan.className = 'px-2 py-1 bg-accent-red text-white rounded text-xs font-medium';
+                timeSpan.textContent = 'N/A';
+                contentPre.textContent = `Error: ${error.message}`;
+                showNotification('API request failed', 'error');
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('apiUrl').value = 'https://jsonplaceholder.typicode.com/posts';
+            document.querySelector('#requestBody textarea').value = '';
+            document.getElementById('apiResponse').classList.add('hidden');
+            showNotification('Cleared API playground');
+        });
+
+        // Feature card interactions
+        document.getElementById('exploreChallengesBtn').addEventListener('click', () => {
+            showNotification('Loading challenge catalog...', 'info');
+            setTimeout(() => {
+                showNotification('Challenge catalog loaded! Redirecting...');
+                setTimeout(() => window.location.href = '#challenges', 1000);
+            }, 1500);
+        });
+
+        document.getElementById('aiFeatureCard').addEventListener('click', () => showModal(aiModal));
+        
+        document.getElementById('editorFeatureCard').addEventListener('click', () => {
+            showNotification('Opening live coding environment...', 'info');
+            setTimeout(() => {
+                document.getElementById('runCodeBtn').click();
+            }, 1000);
+        });
+        
+        document.getElementById('apiFeatureCard').addEventListener('click', () => {
+            document.getElementById('apiUrl').focus();
+            showNotification('API Playground is ready! Try sending a request.');
+        });
+
+        // Community interactions
+        document.getElementById('joinCommunityBtn').addEventListener('click', () => {
+            showNotification('Redirecting to Discord server...', 'info');
+            setTimeout(() => {
+                window.open('https://discord.gg/backendmentor', '_blank');
+            }, 1000);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // AI tooltip interactions
+        const aiAssistant = document.getElementById('aiAssistant');
+        const aiTooltip = document.getElementById('aiTooltip');
+
+        aiAssistant.addEventListener('mouseenter', () => {
+            aiTooltip.style.opacity = '1';
+            aiTooltip.style.pointerEvents = 'auto';
+        });
+
+        aiAssistant.addEventListener('mouseleave', () => {
+            aiTooltip.style.opacity = '0';
+            aiTooltip.style.pointerEvents = 'none';
+        });
+
+        // Close modals on outside click
+        [authModal, aiModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideModal(modal);
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideModal(authModal);
+                hideModal(aiModal);
+            }
+            if (e.ctrlKey && e.key === 'Enter' && aiModal.classList.contains('active')) {
+                document.getElementById('sendAiMessage').click();
+            }
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                showModal(aiModal);
+                aiInput.focus();
+            }
+        });
+
+        // Enter key support for inputs
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendAiMessage').click();
+            }
+        });
+
+        // Initialize terminal output styling
+        document.querySelectorAll('#terminalContent div').forEach(line => {
+            line.style.opacity = '0';
+            line.style.transform = 'translateX(-20px)';
+            line.style.transition = 'all 0.3s ease';
+        });
+
+        // Load user data if exists
+        const savedUser = localStorage.getItem('backendMentorUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            showNotification(`Welcome back! Continuing your ${currentUser.track} journey.`);
+        }
+
+        // Performance monitoring
+        window.addEventListener('load', () => {
+            const loadTime = performance.now();
+            console.log(`Backend Mentor loaded in ${Math.round(loadTime)}ms`);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'976409b4a40642f0',t:'MTc1NjM4NjUxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
